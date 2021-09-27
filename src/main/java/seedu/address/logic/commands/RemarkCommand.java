@@ -1,8 +1,11 @@
 package seedu.address.logic.commands;
 
-
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
+
 import java.util.List;
+
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -17,24 +20,24 @@ public class RemarkCommand extends Command {
 
     public static final String COMMAND_WORD = "remark";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD
-        + ": Edits the remark of the person identified "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the remark of the person identified "
         + "by the index number used in the last person listing. "
         + "Existing remark will be overwritten by the input.\n"
         + "Parameters: INDEX (must be a positive integer) "
-        + "r/ [REMARK]\n"
+        + PREFIX_REMARK + "[REMARK]\n"
         + "Example: " + COMMAND_WORD + " 1 "
-        + "r/ Likes to swim.";
+        + PREFIX_REMARK + "Likes to swim.";
 
-    public static final String MESSAGE_NOT_IMPLEMENTED_YET = "Remark command not implemented yet";
-    public static final String MESSAGE_ARGUMENTS = "Index: %1$d, Remark: %2$s";
     public static final String MESSAGE_ADD_REMARK_SUCCESS = "Added remark to Person: %1$s";
     public static final String MESSAGE_DELETE_REMARK_SUCCESS = "Removed remark from Person: %1$s";
 
     private final Index index;
     private final Remark remark;
 
-
+    /**
+     * @param index  of the person in the filtered person list to edit the remark
+     * @param remark of the person to be updated to
+     */
     public RemarkCommand(Index index, Remark remark) {
         requireAllNonNull(index, remark);
 
@@ -42,35 +45,26 @@ public class RemarkCommand extends Command {
         this.remark = remark;
     }
 
-
     @Override
     public CommandResult execute(Model model) throws CommandException {
-        /// command result encapsulate what to print
         List<Person> lastShownList = model.getFilteredPersonList();
 
-        /// bigger than the current size, then throw error
         if (index.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
 
-        /// get the person to edit using zero based index
         Person personToEdit = lastShownList.get(index.getZeroBased());
-        Person editedPerson = new Person(
-            personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
-            personToEdit.getAddress(), remark, personToEdit.getTags()
-        );
-        /// create a new person object to update
-        /// use setPerson to update the person
+        Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
+            personToEdit.getAddress(), remark, personToEdit.getTags());
+
         model.setPerson(personToEdit, editedPerson);
-        /// update filtered person list (by the given predicate)
-        model.updateFilteredPersonList(Model.PREDICATE_SHOW_ALL_PERSONS);
+        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
 
         return new CommandResult(generateSuccessMessage(editedPerson));
     }
 
     /**
-     * Generates a commadn execution success message based on whether
-     * the remark is added to or removed from
+     * Generates a command execution success message based on whether the remark is added to or removed from
      * {@code personToEdit}.
      */
     private String generateSuccessMessage(Person personToEdit) {
@@ -92,6 +86,7 @@ public class RemarkCommand extends Command {
 
         // state check
         RemarkCommand e = (RemarkCommand) other;
-        return index.equals(e.index) && remark.equals(e.remark);
+        return index.equals(e.index)
+            && remark.equals(e.remark);
     }
 }
