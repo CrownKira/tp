@@ -2,8 +2,19 @@ package seedu.address.commons.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class DateTimeUtil {
+
+    public static boolean isDateValid(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        try {
+            LocalDateTime.parse(date, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
 
     /**
      * Parses and returns a {@code LocalDateTime} object from {@code str}
