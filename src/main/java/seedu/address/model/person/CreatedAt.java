@@ -1,4 +1,6 @@
 package seedu.address.model.person;
 
-public class CreatedAtDateTime {
+public class CreatedAt {
+
+
 }
